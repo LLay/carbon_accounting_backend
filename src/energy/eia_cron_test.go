@@ -4,9 +4,21 @@ import (
 	"testing"
 )
 
+func TestFetchEIADataBustedHeaders(t *testing.T) {
+	FetchEIADataBustedHeaders()
+}
+
 func TestFetchEIAData(t *testing.T) {
 	FetchEIAData()
 }
+
+// func TestCreateOrg(t *testing.T) {
+// 	createOrg()
+// }
+
+// func TestCreateBucket(t *testing.T) {
+// 	createBucket()
+// }
 
 func TestUnmarshalResponse(t *testing.T) {
 	// JSON data to unmarshal
