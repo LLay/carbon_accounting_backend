@@ -1,6 +1,6 @@
-version: '2'
+version: '3'
 services:
-    nginx: 
+    nginx:
         build: ./docker/nginx
         ports:
             - 80:80
@@ -9,8 +9,13 @@ services:
     api:
         build: .
         depends_on:
-            - mongodb
-            - redis
+            mongodb:
+                condition: service_started # TODO service_healthy
+            redis:
+                condition: service_started # TODO service_healthy
+            influxdb:
+                # condition: service_healthy
+                condition: service_started
         environment:
             API_HOST_PORT: 8888
             LOG_LEVEL: debug
@@ -19,12 +24,30 @@ services:
             NEW_RELIC_IS_ENABLED: "false"
             NEW_RELIC_LICENSE_KEY: key
             NEW_RELIC_PROXY_URL: http://newrelicproxy.com
-            MONGO_URL: mongodb 
-            MONGO_PORT: 27017 
+            MONGO_URL: mongodb
+            MONGO_PORT: 27017
             MONGO_TIMEOUT: 60
             MONGO_DATABASE_NAME: api
             REDIS_URL: redis
         restart: unless-stopped
+    influxdb:
+        image: bitnami/influxdb:2.7.1
+        container_name: influxdb
+        ports:
+            - "8086:8086"
+        environment:
+            - INFLUXDB_ADMIN_USER_TOKEN=admin
+            - INFLUXDB_ADMIN_USER_PASSWORD=adminalskdjfhalksdjh
+            # - INFLUXDB_DB=mydb
+            # - INFLUXDB_ADMIN_USER=admin
+            # - INFLUXDB_ADMIN_PASSWORD=admin_password
+        volumes:
+            - ./influxdb-data:/var/lib/influxdb
+        # healthcheck:
+        #     test: [ "CMD", "influxd", "ping" ]
+        #     interval: 10s
+        #     timeout: 5s
+        #     retries: 5
     mongodb:
         image: mongo:4
         restart: unless-stopped
@@ -38,17 +61,17 @@ services:
             - ./metrics/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
         command:
             - '--config.file=/etc/prometheus/prometheus.yml'
-        ports: 
+        ports:
             - 9090:9090
     pushgateway:
         image: prom/pushgateway
         container_name: pushgateway
-        ports: 
+        ports:
             - 9091:9091
     grafana:
         image: grafana/grafana
         container_name: grafana
-        ports: 
+        ports:
             - 3000:3000
         volumes:
-        - ./metrics/grafana/provisioning:/etc/grafana/provisioning
+            - ./metrics/grafana/provisioning:/etc/grafana/provisioning

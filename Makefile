@@ -1,6 +1,7 @@
-.PHONY: all help run test docker-compose-build-api docker-compose-up-api docker-compose-stop-api
+.PHONY: all help run test build_api up stop
 
-RELEASE_VERSION := $(shell git rev-parse --short origin/master)
+RELEASE_VERSION := 0.0.1
+# RELEASE_VERSION := $(shell git rev-parse --short origin/master)
 #RELEASE_VERSION := $(shell git describe) # describe last tag
 
 all: help
@@ -30,17 +31,17 @@ lint:
 	@curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b ${GOPATH}/bin v1.31.0
 	@golangci-lint run -E golint -e "(.*Sync|.*buf\.Write)"
 
-## docker-compose-build-api: build application docker image
-docker-compose-build-api: 
+## build_api: build application docker image
+build_api: 
 	@docker-compose build
 
-## docker-compose-up-api: up application docker image
-docker-compose-up-api: 
+## up: up application docker image
+up: 
 	@docker-compose up
 
-## docker-compose-stop-api: stop application docker container
-docker-compose-stop-api: 
+## stop: stop application docker container
+stop: 
 	@docker-compose stop
 
 ## run: run application locally using docker
-run: docker-compose-build-api docker-compose-up-api 
+run: build_api up 

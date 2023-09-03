@@ -1,6 +1,9 @@
 package cmd
 
 import (
+	"fmt"
+	"log"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -20,7 +23,10 @@ func Execute() error {
 
 func init() {
 	cobra.OnInitialize(initConfig)
+	fmt.Println("Starting Root")
+	log.Println("Starting Root")
 	rootCmd.AddCommand(apiCmd)
+	rootCmd.AddCommand(cronsCmd)
 }
 
 // initConfig reads in ENV variables if set.

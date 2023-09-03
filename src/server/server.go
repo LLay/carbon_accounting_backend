@@ -6,6 +6,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/michelaquino/golang_api_skeleton/src/log"
+
+	"github.com/michelaquino/golang_api_skeleton/src/energy"
 	"github.com/spf13/viper"
 )
 
@@ -15,6 +17,9 @@ var (
 
 // Start HTTP server
 func Start() {
+	logger.Info(context.Background(), "start api", "Starting API server", nil)
+
+	energy.FetchEIAData()
 	echoInstance := echo.New()
 	ctx := context.Background()
 
