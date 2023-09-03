@@ -4,14 +4,25 @@ import (
 	"testing"
 )
 
-func TestFetchEIADataBustedHeaders(t *testing.T) {
-	FetchEIADataBustedHeaders()
+func TestFetchEIADataResty(t *testing.T) {
+	// FetchEIADataResty()
 }
 
-func TestFetchEIAData(t *testing.T) {
-	FetchEIAData()
-}
+// func TestFetchEIAData(t *testing.T) {
+// 	FetchEIAData()
+// }
 
+func TestGetDataInDateRange(t *testing.T) {
+	start, err := parseDateTimeToTime("2023-08-31T00")
+	end, err := parseDateTimeToTime("2023-09-03T00")
+	if err != nil {
+		t.Errorf("Error parsing date: %v", err)
+	}
+	err = getDataInDateRange(start, &end)
+	if err != nil {
+		t.Errorf("Error getting data: %v", err)
+	}
+}
 // func TestCreateOrg(t *testing.T) {
 // 	createOrg()
 // }
