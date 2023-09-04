@@ -1,0 +1,28 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+schema {
+    query: MyQuery
+    # mutation: MyMutation
+}
+
+type MyQuery {
+  getAllMeasurements: [EnergyMeasurement!]!
+  # other named queries
+}
+
+# type MyMutation {
+#     createTodo(todo: TodoInput!): Todo!
+#     updateTodo(id: ID!, changes: Map!): Todo
+# }
+
+type EnergyMeasurement {
+  respondent_code: String!
+  respondent_name: String!
+  fuel_type_code: String!
+  fuel_type_name: String!
+  value_units: String!
+  value: Int!
+}
+

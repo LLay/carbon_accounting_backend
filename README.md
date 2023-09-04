@@ -73,3 +73,9 @@ influx auth create \
 ID			Description	Token												User Name	User ID			Permissions
 0bc25448b773a000			D-CqTaAVm3PWGHlyfrSXh9efMZpnfS7_L2EP06DGa17nB8FSetZcaYfR4zqPswN_JVIhTIOtzJ9j7cz6gr3icw==	admin		0bc21576dd22e000	[read:orgs/322813f618e44b4d/authorizations write:orgs/322813f618e44b4d/authorizations read:orgs/322813f618e44b4d/buckets write:orgs/322813f618e44b4d/buckets read:orgs/322813f618e44b4d/dashboards write:orgs/322813f618e44b4d/dashboards read:/orgs/322813f618e44b4d read:orgs/322813f618e44b4d/sources write:orgs/322813f618e44b4d/sources read:orgs/322813f618e44b4d/tasks write:orgs/322813f618e44b4d/tasks read:orgs/322813f618e44b4d/telegrafs write:orgs/322813f618e44b4d/telegrafs read:/users/0bc21576dd22e000 write:/users/0bc21576dd22e000 read:orgs/322813f618e44b4d/variables write:orgs/322813f618e44b4d/variables read:orgs/322813f618e44b4d/scrapers write:orgs/322813f618e44b4d/scrapers read:orgs/322813f618e44b4d/secrets write:orgs/322813f618e44b4d/secrets read:orgs/322813f618e44b4d/labels write:orgs/322813f618e44b4d/labels read:orgs/322813f618e44b4d/views write:orgs/322813f618e44b4d/views read:orgs/322813f618e44b4d/documents write:orgs/322813f618e44b4d/documents read:orgs/322813f618e44b4d/notificationRules write:orgs/322813f618e44b4d/notificationRules read:orgs/322813f618e44b4d/notificationEndpoints write:orgs/322813f618e44b4d/notificationEndpoints read:orgs/322813f618e44b4d/checks write:orgs/322813f618e44b4d/checks read:orgs/322813f618e44b4d/dbrp write:orgs/322813f618e44b4d/dbrp read:orgs/322813f618e44b4d/notebooks write:orgs/322813f618e44b4d/notebooks read:orgs/322813f618e44b4d/annotations write:orgs/322813f618e44b4d/annotations read:orgs/322813f618e44b4d/remotes write:orgs/322813f618e44b4d/remotes read:orgs/322813f618e44b4d/replications write:orgs/322813f618e44b4d/replications]
 ```
+
+### GraphQL
+
+cd src/graphql
+go run server.go
+http://localhost:8080/
