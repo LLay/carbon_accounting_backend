@@ -9,6 +9,7 @@ schema {
 
 type MyQuery {
   getAllMeasurements: [EnergyMeasurement!]!
+  getEnergyAggregatedByFuelType: [EnergyMeasurement!]!
   # other named queries
 }
 
@@ -24,5 +25,6 @@ type EnergyMeasurement {
   fuel_type_name: String!
   value_units: String!
   value: Int!
+  timestamp: String!
 }
 

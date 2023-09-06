@@ -49,17 +49,20 @@ type ComplexityRoot struct {
 		FuelTypeName   func(childComplexity int) int
 		RespondentCode func(childComplexity int) int
 		RespondentName func(childComplexity int) int
+		Timestamp      func(childComplexity int) int
 		Value          func(childComplexity int) int
 		ValueUnits     func(childComplexity int) int
 	}
 
 	MyQuery struct {
-		GetAllMeasurements func(childComplexity int) int
+		GetAllMeasurements            func(childComplexity int) int
+		GetEnergyAggregatedByFuelType func(childComplexity int) int
 	}
 }
 
 type MyQueryResolver interface {
 	GetAllMeasurements(ctx context.Context) ([]*model.EnergyMeasurement, error)
+	GetEnergyAggregatedByFuelType(ctx context.Context) ([]*model.EnergyMeasurement, error)
 }
 
 type executableSchema struct {
@@ -105,6 +108,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.EnergyMeasurement.RespondentName(childComplexity), true
 
+	case "EnergyMeasurement.timestamp":
+		if e.complexity.EnergyMeasurement.Timestamp == nil {
+			break
+		}
+
+		return e.complexity.EnergyMeasurement.Timestamp(childComplexity), true
+
 	case "EnergyMeasurement.value":
 		if e.complexity.EnergyMeasurement.Value == nil {
 			break
@@ -125,6 +135,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.MyQuery.GetAllMeasurements(childComplexity), true
+
+	case "MyQuery.getEnergyAggregatedByFuelType":
+		if e.complexity.MyQuery.GetEnergyAggregatedByFuelType == nil {
+			break
+		}
+
+		return e.complexity.MyQuery.GetEnergyAggregatedByFuelType(childComplexity), true
 
 	}
 	return 0, false
@@ -551,6 +568,50 @@ func (ec *executionContext) fieldContext_EnergyMeasurement_value(ctx context.Con
 	return fc, nil
 }
 
+func (ec *executionContext) _EnergyMeasurement_timestamp(ctx context.Context, field graphql.CollectedField, obj *model.EnergyMeasurement) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_EnergyMeasurement_timestamp(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Timestamp, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_EnergyMeasurement_timestamp(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "EnergyMeasurement",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _MyQuery_getAllMeasurements(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_MyQuery_getAllMeasurements(ctx, field)
 	if err != nil {
@@ -602,6 +663,68 @@ func (ec *executionContext) fieldContext_MyQuery_getAllMeasurements(ctx context.
 				return ec.fieldContext_EnergyMeasurement_value_units(ctx, field)
 			case "value":
 				return ec.fieldContext_EnergyMeasurement_value(ctx, field)
+			case "timestamp":
+				return ec.fieldContext_EnergyMeasurement_timestamp(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type EnergyMeasurement", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _MyQuery_getEnergyAggregatedByFuelType(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_MyQuery_getEnergyAggregatedByFuelType(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.MyQuery().GetEnergyAggregatedByFuelType(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.EnergyMeasurement)
+	fc.Result = res
+	return ec.marshalNEnergyMeasurement2ᚕᚖgithubᚗcomᚋmichelaquinoᚋgolang_api_skeletonᚋsrcᚋgraphqlᚋgraphᚋmodelᚐEnergyMeasurementᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_MyQuery_getEnergyAggregatedByFuelType(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "MyQuery",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "respondent_code":
+				return ec.fieldContext_EnergyMeasurement_respondent_code(ctx, field)
+			case "respondent_name":
+				return ec.fieldContext_EnergyMeasurement_respondent_name(ctx, field)
+			case "fuel_type_code":
+				return ec.fieldContext_EnergyMeasurement_fuel_type_code(ctx, field)
+			case "fuel_type_name":
+				return ec.fieldContext_EnergyMeasurement_fuel_type_name(ctx, field)
+			case "value_units":
+				return ec.fieldContext_EnergyMeasurement_value_units(ctx, field)
+			case "value":
+				return ec.fieldContext_EnergyMeasurement_value(ctx, field)
+			case "timestamp":
+				return ec.fieldContext_EnergyMeasurement_timestamp(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type EnergyMeasurement", field.Name)
 		},
@@ -2560,6 +2683,11 @@ func (ec *executionContext) _EnergyMeasurement(ctx context.Context, sel ast.Sele
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "timestamp":
+			out.Values[i] = ec._EnergyMeasurement_timestamp(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -2612,6 +2740,28 @@ func (ec *executionContext) _MyQuery(ctx context.Context, sel ast.SelectionSet) 
 					}
 				}()
 				res = ec._MyQuery_getAllMeasurements(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "getEnergyAggregatedByFuelType":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._MyQuery_getEnergyAggregatedByFuelType(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}

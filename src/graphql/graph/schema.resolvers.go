@@ -7,6 +7,7 @@ package graph
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/influxdata/influxdb-client-go/v2/api"
 	"github.com/michelaquino/golang_api_skeleton/src/graphql/graph/model"
@@ -14,13 +15,11 @@ import (
 
 // GetAllMeasurements is the resolver for the getAllMeasurements field.
 func (r *myQueryResolver) GetAllMeasurements(ctx context.Context) ([]*model.EnergyMeasurement, error) {
-
 	query := `
 		from(bucket:"my_bucket")
 		|> range(start: -7d) 
 		|> filter(fn: (r) => r._measurement == "energy_data")
     `
-	// cannot query an empty range",
 
 	queryAPI := r.influxClient.QueryAPI("my_organization")
 	result, err := queryAPI.Query(context.Background(), query)
@@ -35,6 +34,67 @@ func (r *myQueryResolver) GetAllMeasurements(ctx context.Context) ([]*model.Ener
 	}
 
 	return energyMeasurements, nil
+}
+
+// GetEnergyAggregatedByFuelType is the resolver for the getEnergyAggregatedByFuelType field.
+func (r *myQueryResolver) GetEnergyAggregatedByFuelType(ctx context.Context) ([]*model.EnergyMeasurement, error) {
+	// startTime, err := ParseDateTimeToTime("2021-08-01T00:00:00Z")
+	query := fmt.Sprintf(`
+		from(bucket: "my_bucket")
+		|> range(start: %d, stop: %d)
+		|> filter(fn: (r) => r["_measurement"] == "energy_data")
+		|> group(columns: ["_measurement", "fuel_type_code"])
+		|> aggregateWindow(every: 1h, fn: sum, createEmpty: false)
+		|> yield(name: "sum")
+    `, time.Now().AddDate(0, 0, -7).Unix(), time.Now().Unix())
+
+	fmt.Println(query)
+	queryAPI := r.influxClient.QueryAPI("my_organization")
+	// Not supported in InfluxDB OSS
+	// result, err := queryAPI.QueryWithParams(context.Background(), query, parameters)
+	result, err := queryAPI.Query(context.Background(), query)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Printf("Result lyon: %+v\n", result)
+
+	// Record: _measurement:energy_data,
+	// _start:2023-08-28 20:38:28 +0000 UTC,
+	// _stop:2023-09-04 20:38:28 +0000 UTC,
+	// _time:2023-08-30 01:00:00 +0000 UTC,
+	// _value:371748,
+	// fuel_type_code:COL,
+	// result:sum,
+	// table:0
+
+	energyMeasurements, err := DecodeResultToEnergyMeasurement(result)
+	if err != nil {
+		fmt.Printf("Error decoding result: %v\n", err)
+		return nil, err
+	}
+
+	return energyMeasurements, nil
+}
+
+// MyQuery returns MyQueryResolver implementation.
+func (r *Resolver) MyQuery() MyQueryResolver { return &myQueryResolver{r} }
+
+type myQueryResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
+type EnergyMeasurement struct {
+	RespondentCode string `json:"respondent_code"`
+	RespondentName string `json:"respondent_name"`
+	FuelTypeCode   string `json:"fuel_type_code"`
+	FuelTypeName   string `json:"fuel_type_name"`
+	ValueUnits     string `json:"value_units"`
+	Value          int    `json:"value"`
+	Timestamp      string `json:"timestamp"`
 }
 
 func DecodeResultToEnergyMeasurement(result *api.QueryTableResult) ([]*model.EnergyMeasurement, error) {
@@ -74,7 +134,6 @@ func DecodeResultToEnergyMeasurement(result *api.QueryTableResult) ([]*model.Ene
 
 	return energyMeasurements, nil
 }
-
 func mapToEnergyMeasurement(data map[string]interface{}) (*model.EnergyMeasurement, error) {
 	var energyMeasurement model.EnergyMeasurement
 
@@ -112,22 +171,30 @@ func mapToEnergyMeasurement(data map[string]interface{}) (*model.EnergyMeasureme
 			}
 		case "_value":
 			// print type of value
-			fmt.Printf("Type of value: %T\n", value)
 			if intVal, ok := value.(int64); ok {
 				energyMeasurement.Value = int(intVal)
 			} else {
 				return nil, fmt.Errorf("unexpected type for value")
 			}
+		case "_time":
+			// print type of value
+			fmt.Printf("Type of value: %T\n", value)
+			if str, ok := value.(time.Time); ok {
+				energyMeasurement.Timestamp = ParseDateTime(str)
+			} else {
+				return nil, fmt.Errorf("unexpected type for value")
+			}
 		default:
-			// intentionally do nothing as there are fields we don't care about such as "_value"
+			// intentionally do nothing as there are fields we don't care about
 			// return nil, fmt.Errorf("unknown field: %s", key)
 		}
 	}
 
 	return &energyMeasurement, nil
 }
-
-// MyQuery returns MyQueryResolver implementation.
-func (r *Resolver) MyQuery() MyQueryResolver { return &myQueryResolver{r} }
-
-type myQueryResolver struct{ *Resolver }
+func ParseDateTime(dt time.Time) string {
+	return dt.Format("2006-01-02T15")
+}
+func ParseDateTimeToTime(dt string) (time.Time, error) {
+	return time.Parse("2006-01-02T15", dt)
+}

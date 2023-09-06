@@ -76,6 +76,12 @@ ID			Description	Token												User Name	User ID			Permissions
 
 ### GraphQL
 
+### Run it
 cd src/graphql
 go run server.go
 http://localhost:8080/
+
+
+#### Generate
+cd src/graphql
+go run github.com/99designs/gqlgen generate

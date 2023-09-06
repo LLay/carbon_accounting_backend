@@ -129,11 +129,11 @@ func ConvertXParamsToMap(x XParams) map[string]interface{} {
 }
 
 // function to parse a datetime into a string of the form "2023-09-02T00" ISO 8601
-func parseDateTime(dt time.Time) string {
+func ParseDateTime(dt time.Time) string {
 	return dt.Format("2006-01-02T15")
 }
 
-func parseDateTimeToTime(dt string) (time.Time, error) {
+func ParseDateTimeToTime(dt string) (time.Time, error) {
 	return time.Parse("2006-01-02T15", dt)
 }
 
@@ -142,7 +142,7 @@ func getDataInDateRange(start time.Time, end *time.Time) (err error) {
 		Frequency: "hourly",
 		Data:      []string{"value"},
 		Facets:    map[string]interface{}{},
-		Start:     parseDateTime(start),
+		Start:     ParseDateTime(start),
 		End:       nil,
 		Sort: []SortItem{
 			{"period", "desc"},
@@ -152,7 +152,7 @@ func getDataInDateRange(start time.Time, end *time.Time) (err error) {
 	}
 
 	if end != nil {
-		xParams.End = parseDateTime(*end)
+		xParams.End = ParseDateTime(*end)
 	}
 
 	err = writePaginatedData(xParams)

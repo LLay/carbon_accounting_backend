@@ -9,4 +9,5 @@ type EnergyMeasurement struct {
 	FuelTypeName   string `json:"fuel_type_name"`
 	ValueUnits     string `json:"value_units"`
 	Value          int    `json:"value"`
+	Timestamp      string `json:"timestamp"`
 }

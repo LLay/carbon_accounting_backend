@@ -14,8 +14,18 @@ then host?
 ya
 what's left?
 
+aggregate endpoint
+start, end
+- {
+    "<FuelType>":[]
+  }
+
 
 FE makes requests to DB
-- 
+- aggregate hourly data by fuel type. why? speed? ease of use
 
-aggregate hourly data by fuel type
+Host
+- InfluxDB hosted
+- Domain name
+- webserver dockerized and deployed 
+- server dockerized and deployed

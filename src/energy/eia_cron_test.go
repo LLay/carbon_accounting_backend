@@ -13,8 +13,8 @@ func TestFetchEIADataResty(t *testing.T) {
 // }
 
 func TestGetDataInDateRange(t *testing.T) {
-	start, err := parseDateTimeToTime("2023-08-31T00")
-	end, err := parseDateTimeToTime("2023-09-03T00")
+	start, err := ParseDateTimeToTime("2023-08-31T00")
+	end, err := ParseDateTimeToTime("2023-09-03T00")
 	if err != nil {
 		t.Errorf("Error parsing date: %v", err)
 	}
@@ -23,6 +23,7 @@ func TestGetDataInDateRange(t *testing.T) {
 		t.Errorf("Error getting data: %v", err)
 	}
 }
+
 // func TestCreateOrg(t *testing.T) {
 // 	createOrg()
 // }
